@@ -3,16 +3,6 @@ from time import sleep
 from os import system
 system('title @melon3000')
 
-
-#test
-#------------------------------------------
-print("checkpassword()", end=' -> ')
-print(checkpassword('koahkoakoa123@!gG')) 
-sleep(3)
-system('cls')
-#------------------------------------------
-
-
 current_user = ""
 
 users = {
@@ -22,4 +12,3 @@ users = {
 }
 
 register(users)
-print(users)

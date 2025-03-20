@@ -1,4 +1,7 @@
-GREEN = 
+YELLOW = "\033[93m"
+GREEN = "\033[92m"
+RED = '\033[31m'
+RESET = "\033[0m"
 
 def checkpassword(password):
     symbols1 = list(".,:;!_*-+()/#¤%&")
@@ -22,8 +25,9 @@ def checkpassword(password):
             has_uppercase = True
         
         if has_symbols and has_digits and has_lowercase and has_uppercase:
+            print(f'{GREEN}Parool vastab normile{RESET}.')
             return True
-
+    print(f'{RED}Parool ei vastab normile{RESET}.')
     return False
 
 
