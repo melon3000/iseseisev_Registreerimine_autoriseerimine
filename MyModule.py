@@ -1,7 +1,6 @@
-from ast import Str
 import os
-import random
 from os import system
+import random
 from time import sleep
 
 YELLOW = "\033[93m"
@@ -12,9 +11,7 @@ R = "\033[0m"
 
 #----------------------------------------------------------------------------------
 def title():
-    """Aken pealkirja animatsioon.
-    Kuvab "github.com/melon3000" tähemärkide kaupa akna pealkirjana.
-    """
+    """Aken pealkirja animatsioon."""
     system('cls')
     text = ''
     for char in "github.com/melon3000":
@@ -95,12 +92,12 @@ def generatePassword() -> str:
     return ''.join([random.choice(ls) for i in range(12)])
 
 #----------------------------------------------------------------------------------
-def register(users: dict):
+def register(usernames: list, passwords: list):
     """Registreerib uue kasutaja."""
     system('cls')
     username = input(f"{G}Sisesta nimi: {R}")
     
-    if username.lower() in (name.lower() for name in users):
+    if username.lower() in (name.lower() for name in usernames):
         print(f"{RED}Viga! Nimi on juba kasutusel.{R}")
         sleep(3)
         return 
@@ -109,25 +106,29 @@ def register(users: dict):
     print(f'{R}')    
 
     if password_method_choice == 1:
-        users[username] = generatePassword()
+        generated_password = generatePassword()
+        usernames.append(username)
+        passwords.append(generated_password)
         print(f"{G}Kasutaja {GREEN}{username}{G} on registreeritud!")
-        print(f"{R}Teie parool:{GREEN}{users[username]}{G}")
+        print(f"{R}Teie parool:{GREEN}{generated_password}{G}")
         system('echo. & echo Vajuta mõni nupp... & pause >nul')
         
     elif password_method_choice == 2:
         password = input("Sisesta parool: ")
         if checkpassword(password):
-            users[username] = password
+            usernames.append(username)
+            passwords.append(password)
             print(f"{G}Kasutaja {GREEN}{username}{G} on registreeritud!")
     sleep(3)
 
 #----------------------------------------------------------------------------------
-def auth(username: str, password: str, users: dict):
+def auth(username: str, password: str, usernames: list, passwords: list):
     """Kontrollib, kas kasutaja ja parool on õiged."""
     system('cls')
 
-    if username.lower() in (name.lower() for name in users):
-        if users[username.lower()] == password:
+    if username.lower() in (name.lower() for name in usernames):
+        index = usernames.index(username.lower())
+        if passwords[index] == password:
             print(f"Õnnitlused, {GREEN}{username}{R}! Olete edukalt sisse logitud.")
             sleep(3)
             return username, 1
@@ -140,17 +141,10 @@ def auth(username: str, password: str, users: dict):
     return None, 0
 
 #----------------------------------------------------------------------------------
-def change_credentials(users: dict, username: str, login: str, user_login_status: bool):
-    """Võimaldab kasutajal muuta oma nime või parooli, kui ta on sisse logitud ja tema login vastab sisestatud kasutajale.
-    
-    :param dict users: kasutajate andmebaas
-    :param str username: aktiivne kasutajanimi
-    :param str login: sisse logitud kasutaja nimi
-    :param bool user_login_status: kas kasutaja on sisse logitud (1) või mitte (0)
-    """
+def change_credentials(usernames: list, passwords: list, username: str, login: str, user_login_status: bool):
+    """Võimaldab kasutajal muuta oma nime või parooli, kui ta on sisse logitud ja tema login vastab sisestatud kasutajale."""
     system('cls')
 
-    # Kontrollime, kas kasutaja on sisse logitud ja kas login vastab username-le
     if user_login_status == 0 or username != login:
         print(f"{RED}Viga! Peate olema sisse logitud ja kasutama oma andmeid.{R}")
         sleep(3)
@@ -164,17 +158,17 @@ def change_credentials(users: dict, username: str, login: str, user_login_status
     
     if choice == "1":
         new_username = input(f"{G}Sisesta uus kasutajanimi: {R}")
-        if new_username in users:
+        if new_username in usernames:
             print(f"{RED}Viga! See nimi on juba kasutusel.{R}")
             sleep(3)
             return
-        users[new_username] = users.pop(username)
+        usernames[usernames.index(username)] = new_username
         print(f"{GREEN}Kasutajanimi muudetud! Uus nimi: {new_username}{R}")
     
     elif choice == "2":
         new_password = input(f"{G}Sisesta uus parool: {R}")
         if checkpassword(new_password):
-            users[username] = new_password
+            passwords[usernames.index(username)] = new_password
             print(f"{GREEN}Parool edukalt muudetud!{R}")
     
     else:
@@ -183,7 +177,7 @@ def change_credentials(users: dict, username: str, login: str, user_login_status
     sleep(3)
 
 #----------------------------------------------------------------------------------
-def restorePassword(user_login_status: bool, login:str, username: str, users: dict):
+def restorePassword(user_login_status: bool, login:str, username: str, usernames: list, passwords: list):
     """Laseb kasutajal parooli lähtestada."""
 
     if user_login_status == 0 or username != login:
@@ -191,9 +185,9 @@ def restorePassword(user_login_status: bool, login:str, username: str, users: di
         sleep(2)
         return
 
-    if username in users and username == login:
+    if username in usernames and username == login:
         new_password = generatePassword()
-        users[username] = new_password
+        passwords[usernames.index(username)] = new_password
         print(f"{GREEN}Uus parool kasutajale {username}: {new_password}{R}")
     else:
         print(f"{RED}Kasutajat ei leitud!{R}")
