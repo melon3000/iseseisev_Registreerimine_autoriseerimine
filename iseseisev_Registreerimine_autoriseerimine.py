@@ -5,9 +5,7 @@ title()
 user_login_status = 0
 login = ''
 
-usernames = []
-passwords = []
-emails = []
+usernames, passwords, emails = load()
 
 while True:
     current_user = get_user(user_login_status, login)
