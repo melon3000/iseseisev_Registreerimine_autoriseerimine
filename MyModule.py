@@ -11,12 +11,34 @@ RED = '\033[31m'
 G = '\033[90m'
 R = "\033[0m"
 
-# Списки для пользователей, паролей и почт
-usernames = []
-passwords = []
-emails = []
+def load(filename="saves.txt"):
+    usernames = []
+    passwords = []
+    emails = []
 
-#----------------------------------------------------------------------------------
+    with open(filename, "r", encoding="utf-8") as file:
+        for line in file:
+            parts = line.strip().split(" | ")
+            if len(parts) == 3:
+                username, password, email = parts
+                usernames.append(username)
+                passwords.append(password)
+                emails.append(email)
+    
+    return usernames, passwords, emails
+
+def save(usernames, passwords, emails, filename="saves.txt"):
+    if not (len(usernames) == len(passwords) == len(emails)):
+        raise ValueError("Списки usernames, passwords и emails должны быть одинаковой длины.")
+
+    with open(filename, "w", encoding="utf-8") as file:
+        for username, password, email in zip(usernames, passwords, emails):
+            file.write(f"{username} | {password} | {email}\n")
+
+
+#----------------------------------------------------------------------------------#
+#!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
+#----------------------------------------------------------------------------------#
 def send_mail(to_email: str, subject: str, body: str):
     """Функция для отправки письма на почту."""
     from_email = ""  # Замените на ваш адрес электронной почты
@@ -170,6 +192,7 @@ def register(usernames: list, passwords: list, emails: list):
             # Saadame e-kirja registreerimisest
             send_mail(email, "Tere tulemast!", f"Teie konto on edukalt loodud. Kasutajanimi: {username}, Parool: {password}")
     
+    save(usernames, passwords, emails)
     sleep(3)
 
 #----------------------------------------------------------------------------------
@@ -262,3 +285,4 @@ def restorePassword(user_login_status: bool, login:str, username: str, usernames
     sleep(2)
 
 #----------------------------------------------------------------------------------
+
